@@ -3,11 +3,12 @@
     <section class="women-banner spad">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-12 mt-5">
-                    <carousel class="product-slider" :items="3" :nav="false" :autoplay="true">
-                        <div class="product-item">
+                <div class="col-lg-12 mt-5" v-if="product.length > 0">
+                    <carousel class="product-slider" :items="3" :nav="false" :autoplay="true" :dot="false">
+
+                        <div class="product-item" v-for="products in product" :key="products.id">
                             <div class="pi-pic">
-                                <img src="img/products/women-2.jpg" alt="" />
+                                <img :src="products.galleries[0].photo" alt="" />
                                 <ul>
                                     <li class="w-icon active">
                                         <a href="#"><i class="icon_bag_alt"></i></a>
@@ -16,79 +17,20 @@
                                 </ul>
                             </div>
                             <div class="pi-text">
-                                <div class="catagory-name">Shoes</div>
+                                <div class="catagory-name">{{ products.type }}</div>
                                 <a href="#">
-                                    <h5>Guangzhou sweater</h5>
+                                    <h5>{{ products.name }}</h5>
                                 </a>
                                 <div class="product-price">
-                                    $13.00
+                                    ${{ products.price }}
                                 </div>
                             </div>
                         </div>
-                        <div class="product-item">
-                            <div class="pi-pic">
-                                <img src="img/products/women-4.jpg" alt="" />
-                                <ul>
-                                    <li class="w-icon active">
-                                        <a href="#"><i class="icon_bag_alt"></i></a>
-                                    </li>
-                                    <li class="quick-view"><a href="#">+ Quick View</a></li>
-                                </ul>
-                            </div>
-                            <div class="pi-text">
-                                <div class="catagory-name">Shoes</div>
-                                <a href="#">
-                                    <h5>Guangzhou sweater</h5>
-                                </a>
-                                <div class="product-price">
-                                    $13.00
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-item">
-                            <div class="pi-pic">
-                                <img src="img/products/women-3.jpg" alt="" />
-                                <ul>
-                                    <li class="w-icon active">
-                                        <a href="#"><i class="icon_bag_alt"></i></a>
-                                    </li>
-                                    <li class="quick-view"><a href="#">+ Quick View</a></li>
-                                </ul>
-                            </div>
-                            <div class="pi-text">
-                                <div class="catagory-name">Towel</div>
-                                <a href="#">
-                                    <h5>Pure Pineapple</h5>
-                                </a>
-                                <div class="product-price">
-                                    $34.00
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-item">
-                            <div class="pi-pic">
-                                <img src="img/products/women-4.jpg" alt="" />
-                                <ul>
-                                    <li class="w-icon active">
-                                        <a href="#"><i class="icon_bag_alt"></i></a>
-                                    </li>
-                                    <li class="quick-view"><a href="#">+ Quick View</a></li>
-                                    <li class="w-icon">
-                                        <a href="#"><i class="fa fa-random"></i></a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="pi-text">
-                                <div class="catagory-name">Towel</div>
-                                <a href="#">
-                                    <h5>Converse Shoes</h5>
-                                </a>
-                                <div class="product-price">
-                                    $34.00
-                                </div>
-                            </div>
-                        </div>
+
                     </carousel>
+                </div>
+                <div class="col-lg-12" v-else>
+                    <p>Produk Terbaru Belum Tersedia</p>
                 </div>
             </div>
         </div>
@@ -98,11 +40,22 @@
 
 <script>
 import carousel from 'vue-owl-carousel'
+import axios from 'axios'
 
 export default {
   name:'WomenShayna',
   components:{
     carousel
+  },
+  data(){
+      return{
+          product: [],
+      }
+  },
+  mounted(){
+      axios.get('http://127.0.0.1:8000/api/product')
+      .then(res => (this.product = res.data.data.data))
+      .catch(err => console.log(err));
   }
 }
 </script>
