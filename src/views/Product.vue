@@ -26,46 +26,35 @@
                               <div class="product-pic-zoom">
                                   <img class="product-big-img" :src="gambarDefault" alt="" />
                               </div>
-                              <div class="product-thumbs">
+                              <div class="product-thumbs" v-if="productDetail.galleries.length > 0">
                                   <carousel class="product-thumbs-track ps-slider" :dots="false" :items="3" :nav="false">
-                                      <div class="pt" @click="ganti([0])" :class="gambar[0] == gambarDefault ? 'active' : '' ">
-                                          <img src="img/mickey1.jpg" alt="" />
-                                      </div>
-
-                                      <div class="pt" @click="ganti([1])" :class="gambar[1] == gambarDefault ? 'active' : '' ">
-                                          <img src="img/mickey2.jpg" alt="" />
-                                      </div>
-
-                                      <div class="pt" @click="ganti([2])" :class="gambar[2] == gambarDefault ? 'active' : '' ">
-                                          <img src="img/mickey3.jpg" alt="" />
-                                      </div>
-
-                                      <div class="pt" @click="ganti([3])" :class="gambar[3] == gambarDefault ? 'active' : '' ">
-                                          <img src="img/mickey4.jpg" alt="" />
+                                      <div 
+                                      v-for="screanProduct in productDetail.galleries" :key="screanProduct.id"
+                                      class="pt" 
+                                      @click="ganti(screanProduct.photo)" 
+                                      :class="screanProduct.photo == gambarDefault ? 'active' : '' ">
+                                          <img :src="screanProduct.photo" alt="" />
                                       </div>
                                   </carousel>
+                              </div>
+                              <div class="col-12" v-else>
+                                  <p>Photo Product Belum Tersedia.</p>
                               </div>
                           </div>
                           <div class="col-lg-6 text-left">
                               <div class="product-details">
                                   <div class="pd-title">
-                                      <span>oranges</span>
-                                      <h3>Pure Pineapple</h3>
+                                      <span>{{ productDetail.type }}</span>
+                                      <h3>{{ productDetail.name }}</h3>
                                   </div>
                                   <div class="pd-desc">
-                                      <p>
-                                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis, error officia. Rem aperiam laborum voluptatum vel, pariatur modi hic provident eum iure natus quos non a sequi, id accusantium! Autem.
-                                      </p>
-                                      <p>
-                                          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quam possimus quisquam animi, commodi, nihil voluptate nostrum neque architecto illo officiis doloremque et corrupti cupiditate voluptatibus error illum. Commodi expedita animi nulla aspernatur.
-                                          Id asperiores blanditiis, omnis repudiandae iste inventore cum, quam sint molestiae accusamus voluptates ex tempora illum sit perspiciatis. Nostrum dolor tenetur amet, illo natus magni veniam quia sit nihil dolores.
-                                          Commodi ratione distinctio harum voluptatum velit facilis voluptas animi non laudantium, id dolorem atque perferendis enim ducimus? A exercitationem recusandae aliquam quod. Itaque inventore obcaecati, unde quam
-                                          impedit praesentium veritatis quis beatae ea atque perferendis voluptates velit architecto?
-                                      </p>
-                                      <h4>$495.00</h4>
+                                      <p v-html="productDetail.description"></p>
+                                      <h4>${{ productDetail.price }}</h4>
                                   </div>
                                   <div class="quantity">
-                                     <router-link to="/chart"> <a href="#" class="primary-btn pd-cart">Add To Cart</a> </router-link>
+                                     <!-- <router-link to="/chart">  -->
+                                        <a @click="saveKeranjang(productDetail.id)" href="#" class="primary-btn pd-cart">Add To Cart</a> 
+                                     <!-- </router-link> -->
                                   </div>
                               </div>
                           </div>
@@ -79,12 +68,14 @@
       <!-- Product Related Section Begin -->
       <RelatedShayna/>
       <!-- Product Related Section Begin -->
-    <FooterShayna/>
+      <FooterShayna/>
+
   </div>
 </template>
 
 <script>
 import carousel from 'vue-owl-carousel'
+import axios from 'axios'
 
 import HeaderShayna from '@/components/HeaderShayna.vue'
 import FooterShayna from '@/components/FooterShayna.vue'
@@ -100,25 +91,44 @@ export default {
   },
   data:function(){
       return {
-          gambarDefault:'img/mickey1.jpg',
-          gambar:[
-              'img/mickey1.jpg',
-              'img/mickey2.jpg',
-              'img/mickey3.jpg',
-              'img/mickey4.jpg'
-          ],
+          gambarDefault:"",
+          productDetail:[],
+          keranjangUser:[],
       }
   },
   methods:{
       ganti: function(el){
-         this.gambarDefault = this.gambar[el]
+         this.gambarDefault = el
+      },
+      setDataPicture(data){
+          this.productDetail = data
+          this.gambarDefault = data.galleries[0].photo
+      },
+      saveKeranjang(idProduct){
+        this.keranjangUser.push(idProduct);
+        const parsed = JSON.stringify(this.keranjangUser);
+        localStorage.setItem('keranjangUser', parsed);
+      }
+  },
+  beforeCreate(){
+      axios.get("http://127.0.0.1:8000/api/product",{ params:{ id: this.$route.params.id }})
+      .then(res => (this.setDataPicture(res.data.data)))
+      .catch(err => console.log(err));
+  },
+  created(){
+      if (localStorage.getItem('keranjangUser')) {
+      try {
+        this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+      } catch(e) {
+        localStorage.removeItem('keranjangUser');
+      }
       }
   }
 };
 </script>
 
 <style scoped>
-.pt{
-  margin-right: 10px;
-}
+    .pt{
+    margin-right: 10px;
+    }
 </style>
