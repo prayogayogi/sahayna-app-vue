@@ -33,30 +33,23 @@
                                               <th>Action</th>
                                           </tr>
                                       </thead>
-                                      <tbody>
-                                          <tr>
+                                      <tbody v-if="keranjangUser.length > 0">
+                                          <tr v-for="keranjang in keranjangUser" :key="keranjang.id">
                                               <td class="cart-pic first-row">
-                                                  <img src="img/cart-page/product-1.jpg" />
+                                                  <img  :src="keranjang.photo" />
                                               </td>
                                               <td class="cart-title first-row text-center">
-                                                  <h5>Pure Pineapple</h5>
+                                                  <h5>{{ keranjang.name }}</h5>
                                               </td>
-                                              <td class="p-price first-row">$60.00</td>
-                                              <td class="delete-item"><a href="#"><i class="material-icons">
-                                                close
-                                                </i></a></td>
+                                              <td class="p-price first-row">${{ keranjang.price }}</td>
+                                              <td class="delete-item">
+                                                    <a @click="removeItem(keranjangUser.id)" href="#"><i class="material-icons"> close</i></a>
+                                              </td>
                                           </tr>
-                                          <tr>
-                                              <td class="cart-pic first-row">
-                                                  <img src="img/cart-page/product-1.jpg" />
-                                              </td>
-                                              <td class="cart-title first-row text-center">
-                                                  <h5>Pure Pineapple</h5>
-                                              </td>
-                                              <td class="p-price first-row">$60.00</td>
-                                              <td class="delete-item"><a href="#"><i class="material-icons">
-                                                close
-                                                </i></a></td>
+                                      </tbody>
+                                      <tbody v-else>
+                                          <tr id="shop">
+                                              <p>Product Tidak Ada Yang Dimasukan Shopping Chart</p>
                                           </tr>
                                       </tbody>
                                   </table>
@@ -122,5 +115,29 @@ export default {
   components: {
     HeaderShayna,
   },
+   data(){
+      return {
+          keranjangUser: []
+      }
+  },
+  methods:{
+    removeItem(index){
+    this.keranjangUser.splice(index, 1)
+    const parsed = JSON.stringify(this.keranjangUser);
+    localStorage.setItem('keranjangUser', parsed);
+  },
+  },
+  mounted(){
+      if (localStorage.getItem('keranjangUser')) {
+      try {
+        this.keranjangUser = JSON.parse(localStorage.getItem('keranjangUser'));
+      } catch(e) {
+        localStorage.removeItem('keranjangUser');
+      }
+      }
+  }
 };
 </script>
+
+<style scoped>
+</style>

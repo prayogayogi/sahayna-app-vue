@@ -11,7 +11,7 @@
                                     <img :src="product.galleries[0].photo" alt="" />
                                     <ul>
                                         <li class="w-icon active">
-                                            <a href="#"><i class="icon_bag_alt"></i></a>
+                                            <a @click="saveKeranjang(product.id, product.name, product.price, product.galleries[0].photo)" href="#"><i class="icon_bag_alt"></i></a>
                                         </li>
                                         <li class="quick-view"><router-link :to="'/product/' + product.id">+ Quick View</router-link></li>
                                     </ul>
@@ -50,13 +50,27 @@ export default {
   data(){
       return{
           products: [],
+          keranjangUser:[],
       }
   },
   mounted(){
       axios.get('http://127.0.0.1:8000/api/product')
         .then(res => (this.products = res.data.data.data))
         .catch(err => console.log(err));
-  }
+  },
+  methods:{
+    saveKeranjang(idProduct, nameProduct, priceProduct, photoProduct){
+        let productStore = {
+            'id' : idProduct,
+            'name' : nameProduct,
+            'price' : priceProduct,
+            'photo' : photoProduct
+        }
+        this.keranjangUser.push(productStore);
+        const parsed = JSON.stringify(this.keranjangUser);
+        localStorage.setItem('keranjangUser', parsed);
+    }
+  },
 }
 </script>
 

@@ -52,9 +52,9 @@
                                       <h4>${{ productDetail.price }}</h4>
                                   </div>
                                   <div class="quantity">
-                                     <!-- <router-link to="/chart">  -->
-                                        <a @click="saveKeranjang(productDetail.id)" href="#" class="primary-btn pd-cart">Add To Cart</a> 
-                                     <!-- </router-link> -->
+                                     <router-link to="/chart"> 
+                                        <a @click="saveKeranjang(productDetail.id, productDetail.name, productDetail.price, productDetail.galleries[0].photo)" href="#" class="primary-btn pd-cart">Add To Cart</a> 
+                                     </router-link>
                                   </div>
                               </div>
                           </div>
@@ -89,7 +89,7 @@ export default {
     carousel,
     RelatedShayna 
   },
-  data:function(){
+  data(){
       return {
           gambarDefault:"",
           productDetail:[],
@@ -104,8 +104,14 @@ export default {
           this.productDetail = data
           this.gambarDefault = data.galleries[0].photo
       },
-      saveKeranjang(idProduct){
-        this.keranjangUser.push(idProduct);
+      saveKeranjang(idProduct, nameProduct, priceProduct, photoProduct){
+        let productStore = {
+            'id' : idProduct,
+            'name' : nameProduct,
+            'price' : priceProduct,
+            'photo' : photoProduct
+        }
+        this.keranjangUser.push(productStore);
         const parsed = JSON.stringify(this.keranjangUser);
         localStorage.setItem('keranjangUser', parsed);
       }
